@@ -7,7 +7,6 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.Qt import QApplication, QWidget
 
 
-
 class Ui_Form(QWidget):
 
     updated_textBrowser = QtCore.pyqtSignal(str)
@@ -100,13 +99,13 @@ class Ui_Form(QWidget):
                 self.link_btn.setCheckState(False)      # 设置连接按钮为尚未点击状态
                 self.socket = s
                 self.textBrowser.setText('------TCP已打开------')
-                
             else:
                 self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.socket.close()
                 self.textBrowser.setText('---TCP已关闭---')
         except:
             sys.exit()
+    
     
     def link(self):     # 连接服务器
         try:
@@ -120,8 +119,7 @@ class Ui_Form(QWidget):
             sys.exit()
 
 
-    def download(self):
-        
+    def download(self):        
         # 5. 接受文件大小信息
         file_info = self.socket.recv(1024)
         file_info = file_info.decode('utf-8')
@@ -130,9 +128,8 @@ class Ui_Form(QWidget):
         # 6.获取文件大小
         download_filename = file_info.split('：')[1].split(' ')[0]
         fsizemb = file_info.split('：')[2].split('KB')[0]
-        fsizekb = math.ceil(float(fsizemb))
+        fsizekb = math.ceil(float(fsizemb))                 # 保证进度条的准确度，考虑修改这里
         
-
         self.updated_textBrowser.emit('输入 download 即可开始下载')
         time.sleep(6)
         self.updated_textBrowser.emit('clear')
@@ -168,7 +165,8 @@ class Ui_Form(QWidget):
                 self.updated_textBrowser.emit(recv_content.decode('utf-8'))
             else:
                 break
-    
+   
+
     def send_msg(self):
         s = self.textEdit.toPlainText()
         self.socket.send(s.encode('utf-8'))
@@ -182,6 +180,7 @@ class Ui_Form(QWidget):
         else:
             self.textBrowser.clear()
 
+            
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "DownloadByTCP"))
